@@ -121,13 +121,14 @@ def perform_action_on_files(files, action, destination=None):
             except Exception as e:
                 print(f"[ERROR] Failed to {action} file {file}: {e}")
 
-def print_summary(source_count, source_time, target_count, target_time, match_count):
+def print_summary(source_count, source_time, target_count, target_time, match_count, not_found_count):
     """Prints a summary of the operation."""
     total_time = source_time + target_time
     print("\n--- SUMMARY ---")
     print(f"Source folder: {source_count} files scanned in {source_time:.2f} seconds.")
     print(f"Target folder: {target_count} files scanned in {target_time:.2f} seconds.")
     print(f"Total matching files found: {match_count}")
+    print(f"Total files not found: {not_found_count}")
     print(f"Total execution time: {total_time:.2f} seconds.")
     print("----------------\n")
 
@@ -169,8 +170,11 @@ def main():
         
     perform_action_on_files(matching_files, args.action, args.destination)
 
+    # Calculate files not found (files in search folder that didn't match in the target folder)
+    not_found_count = source_count - len(matching_files)
+
     # Print the summary
-    print_summary(source_count, source_time, target_count, target_time, len(matching_files))
+    print_summary(source_count, source_time, target_count, target_time, len(matching_files), not_found_count)
 
     # Save the cache
     save_cache(cache)
