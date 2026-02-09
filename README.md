@@ -1,31 +1,50 @@
 # FileHashSearch
-Find files from search directory and search for the same files in a target directory then carry out actions on them
 
-Key Features:
+Find files in a search directory and locate matching files in a target directory by SHA-256 hash, then perform batch operations on them.
 
-    File Hash Caching:
-        The script saves the file hashes and their last modification times to a cache (hash_cache.json).
-        If a file has not been modified since it was last hashed, it will reuse the cached hash.
+## Key Features
 
-    Cache Validation:
-        Before performing any action, the script checks whether the file has changed by comparing its modification time (mtime).
-        If the file has changed or is not in the cache, it recalculates the hash and updates the cache.
+- **File Hash Caching**: Saves file hashes and modification times to a persistent cache. Unchanged files reuse their cached hash.
+- **Cache Validation**: Compares file modification times before reusing a cached hash. Changed files are automatically rehashed.
+- **Duplicate Detection**: Warns when multiple source files share identical content.
+- **Safe Operations**: Destructive actions require confirmation; `--dry-run` previews changes without modifying files.
 
-    Cache File:
-        The cache is stored in hash_cache.json in the same directory as the script. It stores file paths, hashes, and modification times.
+## Usage
 
-Usage Example:
+### Listing matching files (verbose mode)
 
-    Listing Files (verbose mode):
+```bash
+python hashsearch.py /path/to/search_folder /path/to/target_folder --action list --verbose
+```
 
-    bash
+### Moving matching files
 
-python script.py /path/to/search_folder /path/to/target_folder --action list --verbose
+```bash
+python hashsearch.py /path/to/search_folder /path/to/target_folder --action move --destination /path/to/destination_folder --verbose
+```
 
-Moving Files:
+### Deleting matching files (preview with dry-run)
 
-bash
+```bash
+python hashsearch.py /path/to/search_folder /path/to/target_folder --action delete --dry-run
+```
 
-    python script.py /path/to/search_folder /path/to/target_folder --action move --destination /path/to/destination_folder --verbose
+### Deleting matching files (skip confirmation)
 
-This script will now efficiently use the cached hashes between sessions and only rehash files if they have changed, ensuring speed and accuracy in repeated runs. 
+```bash
+python hashsearch.py /path/to/search_folder /path/to/target_folder --action delete --yes
+```
+
+## Options
+
+| Flag | Description |
+|------|-------------|
+| `--action {move,delete,list}` | Action to perform on matching files (required) |
+| `--destination PATH` | Destination folder for move action (required with `--action move`) |
+| `-v, --verbose` | Increase verbosity |
+| `--dry-run` | Show what would be done without performing actions |
+| `--yes, -y` | Skip confirmation prompt for destructive actions |
+
+## Cache
+
+The hash cache is stored at `~/.filehashsearch_cache.json` and persists between runs. Only files whose modification time has changed since the last run are rehashed, ensuring speed and accuracy in repeated runs.

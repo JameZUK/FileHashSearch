@@ -1,0 +1,12 @@
+[project]
+name = "filehashsearch"
+version = "0.1.0"
+description = "Find files by SHA-256 hash matching across directories"
+requires-python = ">=3.8"
+
+[project.scripts]
+filehashsearch = "hashsearch:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.backends._legacy:_Backend"
